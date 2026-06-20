@@ -43,13 +43,19 @@ start.bat --no-audio --debug
 
 :: 查看帮助
 start.bat --help
+
+:: 停止游戏（正常退出）
+stop.bat
+
+:: 强制停止游戏（立即终止）
+stop.bat --force
 ```
 
 **Linux / macOS 系统：**
 
 ```bash
 # 首次使用需添加执行权限
-chmod +x start.sh
+chmod +x start.sh stop.sh
 
 # 默认配置启动
 ./start.sh
@@ -65,6 +71,12 @@ chmod +x start.sh
 
 # 查看帮助
 ./start.sh --help
+
+# 停止游戏（正常退出，发送 SIGTERM）
+./stop.sh
+
+# 强制停止游戏（立即终止，发送 SIGKILL）
+./stop.sh --force
 ```
 
 #### 方式二：直接使用 Python
@@ -99,6 +111,16 @@ python main.py [选项]
 6. **启动游戏** — 执行 `python main.py` 并传递参数
 7. **日志记录** — 全程记录到 `game_launch.log` 文件
 
+### 停止脚本功能说明
+
+两个停止脚本（`stop.bat` / `stop.sh`）功能完全对等：
+
+1. **进程搜索** — 使用 `psutil` 库搜索所有运行 `main.py` 的 Python 进程
+2. **自动安装依赖** — 如未安装 `psutil`，自动尝试安装
+3. **基本检测模式** — 如 `psutil` 安装失败，降级为列出所有 Python 进程供用户确认
+4. **优雅终止 / 强制终止** — 默认发送 `SIGTERM`（Windows 下 `taskkill`），使用 `--force` 则发送 `SIGKILL`（`taskkill /F`）
+5. **日志记录** — 全程记录到 `game_launch.log` 文件
+
 ### 常见问题排查
 
 | 问题 | 可能原因 | 解决方法 |
@@ -107,11 +129,15 @@ python main.py [选项]
 | 提示"Python 版本过低" | Python 版本 < 3.8 | 升级 Python 至 3.8 或更高版本 |
 | 提示"缺少 pygame 依赖" | 依赖未安装 | 运行 `pip install -r requirements.txt` |
 | 游戏启动后黑屏 | 资源文件缺失 | 确认 `assets/` 目录存在，游戏会自动使用占位图形 |
-| Linux 下无法运行脚本 | 缺少执行权限 | 运行 `chmod +x start.sh` |
+| Linux 下无法运行脚本 | 缺少执行权限 | 运行 `chmod +x start.sh stop.sh` |
 | Linux 下提示无图形环境 | SSH 远程连接无 X11 | 使用 `ssh -X` 启用 X11 转发，或在本地终端运行 |
 | 音频无法播放 | 音频驱动或 pygame.mixer 问题 | 使用 `--no-audio` 参数禁用音频启动 |
 | 游戏卡顿 | 帧率设置过高或硬件性能不足 | 使用 `--fps 30` 降低帧率 |
 | 未知参数报错 | 参数格式不正确 | 使用 `--help` 查看支持的参数列表 |
+| start.bat 运行出现乱码 | 脚本编码问题 | 重新下载 start.bat，确保文件编码正确 |
+| start.bat 提示"不是内部或外部命令" | 命令兼容性问题 | 更新至最新版本脚本，已移除 wmic/where 等不兼容命令 |
+| stop.bat 无法找到进程 | 缺少 psutil 库 | 运行 `pip install psutil` 或使用任务管理器手动结束 |
+| stop.bat 无法终止进程 | 进程占用或权限不足 | 使用 `stop.bat --force` 强制终止 |
 
 如遇其他问题，请查看 `game_launch.log` 日志文件，或使用 `--debug` 参数启动以获取详细日志。
 
@@ -237,6 +263,8 @@ plants_vs_zombies/
 ├── main.py                    # 游戏入口
 ├── start.bat                  # Windows 启动脚本
 ├── start.sh                   # Linux/macOS 启动脚本
+├── stop.bat                   # Windows 停止脚本
+├── stop.sh                    # Linux/macOS 停止脚本
 ├── requirements.txt           # 依赖列表
 ├── README.md                  # 开发文档
 ├── .gitignore                 # Git忽略配置
