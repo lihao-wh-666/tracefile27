@@ -22,9 +22,98 @@ pip install -r requirements.txt
 
 ### 2. 运行游戏
 
-```bash
-python main.py
+#### 方式一：使用启动脚本（推荐）
+
+项目提供了跨平台启动脚本，自动检测环境、验证依赖并启动游戏。
+
+**Windows 系统：**
+
+```cmd
+:: 默认配置启动
+start.bat
+
+:: 全屏模式启动
+start.bat --fullscreen
+
+:: 自定义分辨率和帧率
+start.bat --width 1280 --height 720 --fps 30
+
+:: 禁用音频 + 调试模式
+start.bat --no-audio --debug
+
+:: 查看帮助
+start.bat --help
 ```
+
+**Linux / macOS 系统：**
+
+```bash
+# 首次使用需添加执行权限
+chmod +x start.sh
+
+# 默认配置启动
+./start.sh
+
+# 全屏模式启动
+./start.sh --fullscreen
+
+# 自定义分辨率和帧率
+./start.sh --width 1280 --height 720 --fps 30
+
+# 禁用音频 + 调试模式
+./start.sh --no-audio --debug
+
+# 查看帮助
+./start.sh --help
+```
+
+#### 方式二：直接使用 Python
+
+```bash
+python main.py [选项]
+```
+
+### 启动参数说明
+
+| 参数 | 缩写 | 说明 | 默认值 |
+|------|------|------|--------|
+| `--fullscreen` | `-f` | 以全屏模式启动 | 窗口模式 |
+| `--fps <数值>` | - | 设置目标帧率 | 60 |
+| `--width <数值>` | - | 设置窗口宽度（像素） | 900 |
+| `--height <数值>` | - | 设置窗口高度（像素） | 600 |
+| `--bgm-volume <数值>` | - | 背景音乐音量（0.0-1.0） | 0.5 |
+| `--sfx-volume <数值>` | - | 音效音量（0.0-1.0） | 0.7 |
+| `--no-audio` | - | 禁用所有音频 | 音频开启 |
+| `--debug` | - | 启用调试模式，输出详细日志 | 调试关闭 |
+| `--help` | `-h` | 显示帮助信息 | - |
+
+### 启动脚本功能说明
+
+两个启动脚本（`start.bat` / `start.sh`）功能完全对等，执行以下检查流程：
+
+1. **环境检测** — 检测 Python 是否安装、版本是否 ≥ 3.8
+2. **文件完整性检查** — 验证 `main.py`、`game_core/`、`res/`、`scene/`、`sprites/` 等核心文件是否存在
+3. **依赖验证** — 检查 pygame 是否已安装，缺失时自动安装
+4. **虚拟环境检测** — 检测是否在虚拟环境中运行，未使用时给出建议
+5. **参数解析** — 解析命令行参数并传递给游戏
+6. **启动游戏** — 执行 `python main.py` 并传递参数
+7. **日志记录** — 全程记录到 `game_launch.log` 文件
+
+### 常见问题排查
+
+| 问题 | 可能原因 | 解决方法 |
+|------|----------|----------|
+| 提示"未找到 Python" | Python 未安装或未加入 PATH | 安装 Python 3.8+ 并勾选"Add to PATH" |
+| 提示"Python 版本过低" | Python 版本 < 3.8 | 升级 Python 至 3.8 或更高版本 |
+| 提示"缺少 pygame 依赖" | 依赖未安装 | 运行 `pip install -r requirements.txt` |
+| 游戏启动后黑屏 | 资源文件缺失 | 确认 `assets/` 目录存在，游戏会自动使用占位图形 |
+| Linux 下无法运行脚本 | 缺少执行权限 | 运行 `chmod +x start.sh` |
+| Linux 下提示无图形环境 | SSH 远程连接无 X11 | 使用 `ssh -X` 启用 X11 转发，或在本地终端运行 |
+| 音频无法播放 | 音频驱动或 pygame.mixer 问题 | 使用 `--no-audio` 参数禁用音频启动 |
+| 游戏卡顿 | 帧率设置过高或硬件性能不足 | 使用 `--fps 30` 降低帧率 |
+| 未知参数报错 | 参数格式不正确 | 使用 `--help` 查看支持的参数列表 |
+
+如遇其他问题，请查看 `game_launch.log` 日志文件，或使用 `--debug` 参数启动以获取详细日志。
 
 ## 游戏操作
 
@@ -146,6 +235,8 @@ python main.py
 ```
 plants_vs_zombies/
 ├── main.py                    # 游戏入口
+├── start.bat                  # Windows 启动脚本
+├── start.sh                   # Linux/macOS 启动脚本
 ├── requirements.txt           # 依赖列表
 ├── README.md                  # 开发文档
 ├── .gitignore                 # Git忽略配置
