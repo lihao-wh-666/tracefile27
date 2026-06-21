@@ -6,6 +6,8 @@
 import pygame
 from typing import List, Dict, Callable, Optional, Tuple
 
+from ui.font_utils import get_font
+
 
 class PlantCard:
     """植物卡片"""
@@ -35,8 +37,8 @@ class PlantCard:
         self.can_afford = True
         self.cooldown_remaining = 0
 
-        self.name_font = pygame.font.Font(None, 14)
-        self.cost_font = pygame.font.Font(None, 16)
+        self.name_font = get_font(14)
+        self.cost_font = get_font(16)
 
     def set_position(self, x: int, y: int):
         """设置位置"""

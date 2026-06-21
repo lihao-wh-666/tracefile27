@@ -6,6 +6,8 @@
 import pygame
 from typing import Callable, Optional, Tuple
 
+from ui.font_utils import get_font
+
 
 class Button:
     """按钮组件"""
@@ -46,7 +48,7 @@ class Button:
         self.enabled = True
         self.is_hovered = False
 
-        self.font = pygame.font.Font(None, font_size)
+        self.font = get_font(font_size)
 
     def set_text(self, text: str):
         """设置按钮文本"""

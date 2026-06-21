@@ -6,6 +6,7 @@
 import pygame
 from scene.base_scene import BaseScene
 from ui.button import Button
+from ui.font_utils import get_font
 
 
 class MenuScene(BaseScene):
@@ -27,9 +28,9 @@ class MenuScene(BaseScene):
 
     def _init_fonts(self):
         """初始化字体"""
-        self.title_font = pygame.font.Font(None, 48)
-        self.subtitle_font = pygame.font.Font(None, 24)
-        self.help_font = pygame.font.Font(None, 18)
+        self.title_font = get_font(48, bold=True)
+        self.subtitle_font = get_font(24)
+        self.help_font = get_font(18)
 
     def _init_buttons(self):
         """初始化按钮"""

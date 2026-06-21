@@ -14,6 +14,7 @@ from sprites.zombies.normal_zombie import NormalZombie
 from sprites.zombies.cone_zombie import ConeZombie
 from sprites.bullet import PeaBullet
 from sprites.sun import Sun
+from ui.font_utils import get_font
 
 
 class GameScene(BaseScene):
@@ -53,8 +54,8 @@ class GameScene(BaseScene):
 
     def _init_fonts(self):
         """初始化字体"""
-        self.font = pygame.font.Font(None, 24)
-        self.small_font = pygame.font.Font(None, 16)
+        self.font = get_font(24)
+        self.small_font = get_font(16)
 
     def _reset_game(self):
         """重置游戏状态"""

@@ -6,6 +6,8 @@
 import pygame
 from typing import Tuple
 
+from ui.font_utils import get_font
+
 
 class SunDisplay:
     """阳光显示组件"""
@@ -27,7 +29,7 @@ class SunDisplay:
         self.width = 120
         self.height = 50
 
-        self.font = pygame.font.Font(None, font_size)
+        self.font = get_font(font_size)
 
     def update_sun(self, sun_count: int):
         """

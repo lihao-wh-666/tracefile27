@@ -6,6 +6,7 @@
 import pygame
 from scene.base_scene import BaseScene
 from ui.button import Button
+from ui.font_utils import get_font
 
 
 class PauseScene(BaseScene):
@@ -26,8 +27,8 @@ class PauseScene(BaseScene):
 
     def _init_fonts(self):
         """初始化字体"""
-        self.title_font = pygame.font.Font(None, 48)
-        self.text_font = pygame.font.Font(None, 24)
+        self.title_font = get_font(48, bold=True)
+        self.text_font = get_font(24)
 
     def _init_buttons(self):
         """初始化按钮"""

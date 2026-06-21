@@ -95,7 +95,8 @@ class ResourceLoader:
         pygame.draw.ellipse(surface, (0, 0, 0), (0, 0, size[0], size[1]), 2)
 
         try:
-            font = pygame.font.SysFont("arial", 12, bold=True)
+            from ui.font_utils import get_font
+            font = get_font(12, bold=True)
             text = font.render(name[:3], True, (0, 0, 0))
             text_rect = text.get_rect(center=(size[0] // 2, size[1] // 2))
             surface.blit(text, text_rect)

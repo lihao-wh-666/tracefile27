@@ -6,6 +6,8 @@
 import pygame
 from typing import Tuple
 
+from ui.font_utils import get_font
+
 
 class ProgressBar:
     """进度条组件"""
@@ -45,7 +47,7 @@ class ProgressBar:
 
         self.progress = 0.0
 
-        self.font = pygame.font.Font(None, 14)
+        self.font = get_font(14)
 
     def set_progress(self, progress: float):
         """
