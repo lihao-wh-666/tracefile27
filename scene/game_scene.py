@@ -570,6 +570,7 @@ class GameScene(BaseScene):
         ]
 
         x_start = 150
+        icon_size = 30
         for i, (key, name, cost, color) in enumerate(plant_types):
             x = x_start + i * 120
             can_afford = self.game_controller.economy.can_afford(cost)
@@ -582,7 +583,18 @@ class GameScene(BaseScene):
             pygame.draw.rect(surface, box_color, (x, 10, 100, 50))
             pygame.draw.rect(surface, (0, 0, 0), (x, 10, 100, 50), 2)
 
-            pygame.draw.circle(surface, color, (x + 25, 35), 15)
+            icon_center_x = x + 25
+            icon_center_y = 35
+            if self.game_controller and self.game_controller.resource_loader:
+                try:
+                    plant_img = self.game_controller.resource_loader.load_image(name)
+                    plant_img = pygame.transform.smoothscale(plant_img, (icon_size, icon_size))
+                    img_rect = plant_img.get_rect(center=(icon_center_x, icon_center_y))
+                    surface.blit(plant_img, img_rect)
+                except Exception:
+                    pygame.draw.circle(surface, color, (icon_center_x, icon_center_y), 15)
+            else:
+                pygame.draw.circle(surface, color, (icon_center_x, icon_center_y), 15)
 
             cost_color = (0, 0, 0) if can_afford else (255, 0, 0)
             cost_text = self.small_font.render(f"[{key}] {cost}", True, cost_color)

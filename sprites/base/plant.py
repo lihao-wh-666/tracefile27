@@ -47,11 +47,16 @@ class PlantBase(pygame.sprite.Sprite):
 
     def _load_image(self):
         """加载植物图像"""
+        target_width = int(self.cell_width * 0.75)
+        target_height = int(self.cell_height * 0.75)
+
         if self.resource_loader:
             self.image = self.resource_loader.load_image(self.name)
+            if self.image.get_width() != target_width or self.image.get_height() != target_height:
+                self.image = pygame.transform.smoothscale(self.image, (target_width, target_height))
         else:
-            self.image = pygame.Surface((60, 60), pygame.SRCALPHA)
-            pygame.draw.ellipse(self.image, (34, 139, 34), (0, 0, 60, 60))
+            self.image = pygame.Surface((target_width, target_height), pygame.SRCALPHA)
+            pygame.draw.ellipse(self.image, (34, 139, 34), (0, 0, target_width, target_height))
 
         self.rect = self.image.get_rect()
 

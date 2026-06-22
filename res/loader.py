@@ -55,6 +55,38 @@ class ResourceLoader:
         self._image_cache[name] = image
         return image
 
+    def load_plant_image(self, plant_name: str, view: str = None) -> pygame.Surface:
+        """
+        加载植物图片资源，支持多视图
+
+        Args:
+            plant_name: 植物名称（如 sunflower, peashooter, wallnut）
+            view: 视图角度（front/side/top），None表示主视图
+
+        Returns:
+            pygame.Surface 图片表面
+        """
+        cache_key = f"plant_{plant_name}"
+        if view:
+            cache_key = f"plant_{plant_name}_{view}"
+
+        if cache_key in self._image_cache:
+            return self._image_cache[cache_key]
+
+        filepath = self.config.get_plant_image_path(plant_name, view)
+
+        try:
+            if os.path.exists(filepath):
+                image = pygame.image.load(filepath).convert_alpha()
+            else:
+                image = self._generate_placeholder_image(plant_name)
+        except Exception as e:
+            print(f"加载植物图片 {plant_name} ({view}) 失败: {e}，使用占位图")
+            image = self._generate_placeholder_image(plant_name)
+
+        self._image_cache[cache_key] = image
+        return image
+
     def _generate_placeholder_image(self, name: str) -> pygame.Surface:
         """
         生成占位图片（当资源文件不存在时使用）

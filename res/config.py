@@ -47,6 +47,41 @@ class GameConfig:
         "wallnut": 30000,
     })
 
+    # ========== 植物物种映射（游戏名称 -> 真实植物学名） ==========
+    PLANT_SPECIES: dict = field(default_factory=lambda: {
+        "sunflower": {
+            "scientific_name": "Helianthus annuus",
+            "common_name_cn": "向日葵",
+            "views": ["front", "side", "top"],
+            "image_format": "png",
+        },
+        "peashooter": {
+            "scientific_name": "Pisum sativum",
+            "common_name_cn": "豌豆",
+            "views": ["front", "side", "top"],
+            "image_format": "png",
+        },
+        "wallnut": {
+            "scientific_name": "Juglans regia",
+            "common_name_cn": "核桃",
+            "views": ["front", "side", "top"],
+            "image_format": "png",
+        },
+    })
+
+    # ========== 资源文件命名规范 ==========
+    # 主视图: {plant_name}.png
+    # 多视图: {view}_{plant_name}.png
+    # 示例: sunflower.png, front_sunflower.png, side_sunflower.png, top_sunflower.png
+    PLANT_IMAGE_NAMING: dict = field(default_factory=lambda: {
+        "pattern_view": "{view}_{plant_name}.{ext}",
+        "pattern_main": "{plant_name}.{ext}",
+        "supported_views": ["front", "side", "top"],
+        "supported_formats": ["png", "jpg", "jpeg"],
+        "max_file_size_kb": 2048,
+        "min_resolution": (1920, 1080),
+    })
+
     # ========== 僵尸配置 ==========
     ZOMBIE_BASE_SPEED: float = 0.5
     ZOMBIE_BASE_HP: int = 100
@@ -60,6 +95,7 @@ class GameConfig:
     IMAGES_DIR: str = field(default_factory=lambda: "")
     AUDIO_DIR: str = field(default_factory=lambda: "")
     FONTS_DIR: str = field(default_factory=lambda: "")
+    PLANTS_IMAGES_DIR: str = field(default_factory=lambda: "")
 
     def __post_init__(self):
         """初始化路径"""
@@ -67,10 +103,31 @@ class GameConfig:
         self.IMAGES_DIR = os.path.join(self.ASSETS_DIR, "images")
         self.AUDIO_DIR = os.path.join(self.ASSETS_DIR, "audio")
         self.FONTS_DIR = os.path.join(self.ASSETS_DIR, "fonts")
+        self.PLANTS_IMAGES_DIR = os.path.join(self.IMAGES_DIR, "plants")
 
     def get_image_path(self, filename: str) -> str:
         """获取图片文件完整路径"""
         return os.path.join(self.IMAGES_DIR, filename)
+
+    def get_plant_image_path(self, plant_name: str, view: str = None) -> str:
+        """获取植物图片完整路径
+
+        Args:
+            plant_name: 植物名称（如 sunflower）
+            view: 视图角度（front/side/top），None表示主视图
+
+        Returns:
+            图片文件完整路径
+        """
+        naming = self.PLANT_IMAGE_NAMING
+        ext = self.PLANT_SPECIES.get(plant_name, {}).get("image_format", "png")
+
+        if view is None:
+            filename = naming["pattern_main"].format(plant_name=plant_name, ext=ext)
+            return os.path.join(self.IMAGES_DIR, filename)
+        else:
+            filename = naming["pattern_view"].format(view=view, plant_name=plant_name, ext=ext)
+            return os.path.join(self.PLANTS_IMAGES_DIR, plant_name, filename)
 
     def get_audio_path(self, filename: str) -> str:
         """获取音频文件完整路径"""

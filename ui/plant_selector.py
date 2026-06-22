@@ -14,7 +14,8 @@ class PlantCard:
 
     def __init__(self, plant_type: str, name: str, cost: int,
                  x: int, y: int, width: int = 100, height: int = 70,
-                 color: Tuple[int, int, int] = (0, 255, 0)):
+                 color: Tuple[int, int, int] = (0, 255, 0),
+                 resource_loader=None):
         """
         初始化植物卡片
 
@@ -26,7 +27,8 @@ class PlantCard:
             y: Y坐标
             width: 宽度
             height: 高度
-            color: 植物颜色
+            color: 植物颜色（占位使用）
+            resource_loader: 资源加载器，用于加载植物图片
         """
         self.plant_type = plant_type
         self.name = name
@@ -36,9 +38,24 @@ class PlantCard:
         self.selected = False
         self.can_afford = True
         self.cooldown_remaining = 0
+        self.resource_loader = resource_loader
+        self.plant_image = None
+        self._load_plant_image()
 
         self.name_font = get_font(14)
         self.cost_font = get_font(16)
+
+    def _load_plant_image(self):
+        """加载植物图片用于卡片显示"""
+        if self.resource_loader:
+            try:
+                raw_image = self.resource_loader.load_image(self.plant_type)
+                icon_size = min(40, self.rect.height - 10)
+                self.plant_image = pygame.transform.smoothscale(
+                    raw_image, (icon_size, icon_size)
+                )
+            except Exception:
+                self.plant_image = None
 
     def set_position(self, x: int, y: int):
         """设置位置"""
@@ -75,8 +92,13 @@ class PlantCard:
 
         icon_x = self.rect.left + 25
         icon_y = self.rect.centery
-        pygame.draw.circle(surface, self.color, (icon_x, icon_y), 20)
-        pygame.draw.circle(surface, (0, 0, 0), (icon_x, icon_y), 20, 2)
+
+        if self.plant_image is not None:
+            image_rect = self.plant_image.get_rect(center=(icon_x, icon_y))
+            surface.blit(self.plant_image, image_rect)
+        else:
+            pygame.draw.circle(surface, self.color, (icon_x, icon_y), 20)
+            pygame.draw.circle(surface, (0, 0, 0), (icon_x, icon_y), 20, 2)
 
         name_text = self.name_font.render(self.name, True, (0, 0, 0))
         name_rect = name_text.get_rect(
@@ -104,7 +126,8 @@ class PlantSelector:
 
     def __init__(self, x: int, y: int, plants_config: List[Dict],
                  on_select: Optional[Callable[[str], None]] = None,
-                 on_drag_start: Optional[Callable[[str], None]] = None):
+                 on_drag_start: Optional[Callable[[str], None]] = None,
+                 resource_loader=None):
         """
         初始化植物选择栏
 
@@ -114,6 +137,7 @@ class PlantSelector:
             plants_config: 植物配置列表
             on_select: 选中回调
             on_drag_start: 拖拽开始回调
+            resource_loader: 资源加载器
         """
         self.x = x
         self.y = y
@@ -121,6 +145,7 @@ class PlantSelector:
         self.on_drag_start = on_drag_start
         self.selected_plant: Optional[str] = None
         self.cards: List[PlantCard] = []
+        self.resource_loader = resource_loader
 
         self._init_cards(plants_config)
 
@@ -140,7 +165,8 @@ class PlantSelector:
                 y=self.y,
                 width=card_width,
                 height=card_height,
-                color=config.get("color", (0, 255, 0))
+                color=config.get("color", (0, 255, 0)),
+                resource_loader=self.resource_loader
             )
             self.cards.append(card)
 
