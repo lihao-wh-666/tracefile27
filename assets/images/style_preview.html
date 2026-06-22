@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>植物图片风格选择</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 30px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .style-section {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .style-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        .style-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        .style-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
+        .style-desc {
+            color: #666;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .plants-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .plant-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .plant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .plant-card img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 2px solid #e9ecef;
+        }
+        .plant-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .plant-en {
+            font-size: 13px;
+            color: #888;
+        }
+        .select-btn {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: opacity 0.2s;
+        }
+        .select-btn:hover {
+            opacity: 0.9;
+        }
+        .tips {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .tips strong { color: #ffd700; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌻 植物图片风格选择</h1>
+        <p class="subtitle">请选择您喜欢的风格，将应用于游戏中的所有植物</p>
+
+        <div class="tips">
+            <strong>💡 提示：</strong>
+            如果以上AI生成风格都不符合您的期望，还可以选择：<br>
+            ① 告诉我具体想要什么样的风格（如：像素风、手绘风、3D渲染等），我重新生成<br>
+            ② 您提供图片素材，我帮您导入游戏<br>
+            ③ 从网上资源站下载植物大战僵尸官方风格素材后导入
+        </div>
+
+        <div class="style-section">
+            <div class="style-header">
+                <div class="style-number">1</div>
+                <div>
+                    <div class="style-title">经典PvZ卡通风格</div>
+                    <div class="style-desc">明亮色彩、圆润造型、黑色粗轮廓线，最接近原版游戏的风格</div>
+                </div>
+            </div>
+            <div class="plants-grid">
+                <div class="plant-card">
+                    <img src="plants_preview/style1_pvz_classic/sunflower.png" alt="向日葵">
+                    <div class="plant-name">向日葵</div>
+                    <div class="plant-en">Sunflower</div>
+                </div>
+                <div class="plant-card">
+                    <img src="plants_preview/style1_pvz_classic/peashooter.png" alt="豌豆射手">
+                    <div class="plant-name">豌豆射手</div>
+                    <div class="plant-en">Peashooter</div>
+                </div>
+                <div class="plant-card">
+                    <img src="plants_preview/style1_pvz_classic/wallnut.png" alt="坚果墙">
+                    <div class="plant-name">坚果墙</div>
+                    <div class="plant-en">Wall-nut</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="style-section">
+            <div class="style-header">
+                <div class="style-number">2</div>
+                <div>
+                    <div class="style-title">Q版萌系风格</div>
+                    <div class="style-desc">大头小身、可爱表情、柔和色彩，更萌更可爱的设计</div>
+                </div>
+            </div>
+            <div class="plants-grid">
+                <div class="plant-card">
+                    <img src="plants_preview/style2_chibi/sunflower.png" alt="向日葵">
+                    <div class="plant-name">向日葵</div>
+                    <div class="plant-en">Sunflower</div>
+                </div>
+                <div class="plant-card">
+                    <img src="plants_preview/style2_chibi/peashooter.png" alt="豌豆射手">
+                    <div class="plant-name">豌豆射手</div>
+                    <div class="plant-en">Peashooter</div>
+                </div>
+                <div class="plant-card">
+                    <img src="plants_preview/style2_chibi/wallnut.png" alt="坚果墙">
+                    <div class="plant-name">坚果墙</div>
+                    <div class="plant-en">Wall-nut</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="style-section">
+            <div class="style-header">
+                <div class="style-number">3</div>
+                <div>
+                    <div class="style-title">写实卡通风格</div>
+                    <div class="style-desc">细腻纹理、立体感强、半写实风格，更精致的视觉效果</div>
+                </div>
+            </div>
+            <div class="plants-grid">
+                <div class="plant-card">
+                    <img src="plants_preview/style3_realistic_cartoon/sunflower.png" alt="向日葵">
+                    <div class="plant-name">向日葵</div>
+                    <div class="plant-en">Sunflower</div>
+                </div>
+                <div class="plant-card">
+                    <img src="plants_preview/style3_realistic_cartoon/peashooter.png" alt="豌豆射手">
+                    <div class="plant-name">豌豆射手</div>
+                    <div class="plant-en">Peashooter</div>
+                </div>
+                <div class="plant-card">
+                    <img src="plants_preview/style3_realistic_cartoon/wallnut.png" alt="坚果墙">
+                    <div class="plant-name">坚果墙</div>
+                    <div class="plant-en">Wall-nut</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
