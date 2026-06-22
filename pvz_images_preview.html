@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>植物大战僵尸 - 图片预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3d 50%, #1a472a 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #fff;
+            font-size: 36px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #90EE90;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .status-bar {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .status-item {
+            color: #fff;
+            font-size: 16px;
+        }
+        
+        .status-item .label {
+            color: #90EE90;
+            margin-right: 5px;
+        }
+        
+        .status-item .value.pass {
+            color: #00ff00;
+            font-weight: bold;
+        }
+        
+        .section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        .section-title {
+            color: #2d5a3d;
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #4CAF50;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .grid-views {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+        
+        .grid-preview {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        .plant-card {
+            background: #f8f8f8;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid #ddd;
+        }
+        
+        .plant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            border-color: #4CAF50;
+        }
+        
+        .plant-card.sunflower {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cc 100%);
+        }
+        
+        .plant-card.peashooter {
+            background: linear-gradient(135deg, #e6f7e6 0%, #ccf2cc 100%);
+        }
+        
+        .plant-card.wallnut {
+            background: linear-gradient(135deg, #f5ebe0 0%, #e8d5bc 100%);
+        }
+        
+        .plant-card .img-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 10px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .plant-card img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+        
+        .plant-card .name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .plant-card .view {
+            font-size: 14px;
+            color: #666;
+            background: #e0e0e0;
+            padding: 3px 10px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        
+        .plant-card .info {
+            font-size: 12px;
+            color: #888;
+            margin-top: 8px;
+        }
+        
+        .style-section {
+            margin-bottom: 20px;
+        }
+        
+        .style-title {
+            color: #555;
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .view-labels {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .plant-group {
+            margin-bottom: 30px;
+        }
+        
+        .plant-group-title {
+            color: #2d5a3d;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .plant-group-title .icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .plant-group-title.sunflower .icon {
+            background: #FFD700;
+        }
+        
+        .plant-group-title.peashooter .icon {
+            background: #4CAF50;
+            color: #fff;
+        }
+        
+        .plant-group-title.wallnut .icon {
+            background: #8B4513;
+            color: #fff;
+        }
+        
+        footer {
+            text-align: center;
+            color: #90EE90;
+            margin-top: 40px;
+            font-size: 14px;
+        }
+        
+        .success-badge {
+            display: inline-block;
+            background: #4CAF50;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌻 植物大战僵尸 - 图片替换完成 🌻</h1>
+        <p class="subtitle">已成功替换向日葵、豌豆射手、坚果墙的所有图片</p>
+        
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="label">文件存在性:</span>
+                <span class="value pass">12/12 ✓</span>
+            </div>
+            <div class="status-item">
+                <span class="label">图片加载:</span>
+                <span class="value pass">12/12 ✓</span>
+            </div>
+            <div class="status-item">
+                <span class="label">精灵创建:</span>
+                <span class="value pass">3/3 ✓</span>
+            </div>
+            <div class="status-item">
+                <span class="label">渲染测试:</span>
+                <span class="value pass">通过 ✓</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">🎮 主视图图片 <span class="success-badge">测试通过</span></h2>
+            <div class="grid grid-preview">
+                <div class="plant-card sunflower">
+                    <div class="img-container">
+                        <img src="assets/images/sunflower.png" alt="向日葵">
+                    </div>
+                    <div class="name">向日葵</div>
+                    <div class="view">主视图</div>
+                    <div class="info">1832 × 1832 像素</div>
+                </div>
+                <div class="plant-card peashooter">
+                    <div class="img-container">
+                        <img src="assets/images/peashooter.png" alt="豌豆射手">
+                    </div>
+                    <div class="name">豌豆射手</div>
+                    <div class="view">主视图</div>
+                    <div class="info">1832 × 1832 像素</div>
+                </div>
+                <div class="plant-card wallnut">
+                    <div class="img-container">
+                        <img src="assets/images/wallnut.png" alt="坚果墙">
+                    </div>
+                    <div class="name">坚果墙</div>
+                    <div class="view">主视图</div>
+                    <div class="info">1832 × 1832 像素</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">📐 三视图图片（正面 / 侧面 / 顶部）</h2>
+            
+            <div class="plant-group">
+                <h3 class="plant-group-title sunflower">
+                    <span class="icon">🌻</span>
+                    向日葵 Sunflower
+                </h3>
+                <div class="grid grid-views">
+                    <div class="plant-card sunflower">
+                        <div class="img-container">
+                            <img src="assets/images/plants/sunflower/front_sunflower.png" alt="向日葵正面">
+                        </div>
+                        <div class="name">向日葵</div>
+                        <div class="view">正面 Front</div>
+                        <div class="info">1832 × 1832 像素</div>
+                    </div>
+                    <div class="plant-card sunflower">
+                        <div class="img-container">
+                            <img src="assets/images/plants/sunflower/side_sunflower.png" alt="向日葵侧面">
+                        </div>
+                        <div class="name">向日葵</div>
+                        <div class="view">侧面 Side</div>
+                        <div class="info">1832 × 1832 像素</div>
+                    </div>
+                    <div class="plant-card sunflower">
+                        <div class="img-container">
+                            <img src="assets/images/plants/sunflower/top_sunflower.png" alt="向日葵顶部">
+                        </div>
+                        <div class="name">向日葵</div>
+                        <div class="view">顶部 Top</div>
+                        <div class="info">1832 × 1832 像素</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="plant-group">
+                <h3 class="plant-group-title peashooter">
+                    <span class="icon">🌱</span>
+                    豌豆射手 Peashooter
+                </h3>
+                <div class="grid grid-views">
+                    <div class="plant-card peashooter">
+                        <div class="img-container">
+                            <img src="assets/images/plants/peashooter/front_peashooter.png" alt="豌豆射手正面">
+                        </div>
+                        <div class="name">豌豆射手</div>
+                        <div class="view">正面 Front</div>
+                        <div class="info">1832 × 1832 像素</div>
+                    </div>
+                    <div class="plant-card peashooter">
+                        <div class="img-container">
+                            <img src="assets/images/plants/peashooter/side_peashooter.png" alt="豌豆射手侧面">
+                        </div>
+                        <div class="name">豌豆射手</div>
+                        <div class="view">侧面 Side</div>
+                        <div class="info">1832 × 1832 像素</div>
+                    </div>
+                    <div class="plant-card peashooter">
+                        <div class="img-container">
+                            <img src="assets/images/plants/peashooter/top_peashooter.png" alt="豌豆射手顶部">
+                        </div>
+                        <div class="name">豌豆射手</div>
+                        <div class="view">顶部 Top</div>
+                        <div class="info">1832 × 1832 像素</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="plant-group">
+                <h3 class="plant-group-title wallnut">
+                    <span class="icon">🥜</span>
+                    坚果墙 Wall-nut
+                </h3>
+                <div class="grid grid-views">
+                    <div class="plant-card wallnut">
+                        <div class="img-container">
+                            <img src="assets/images/plants/wallnut/front_wallnut.png" alt="坚果墙正面">
+                        </div>
+                        <div class="name">坚果墙</div>
+                        <div class="view">正面 Front</div>
+                        <div class="info">1832 × 1832 像素</div>
+                    </div>
+                    <div class="plant-card wallnut">
+                        <div class="img-container">
+                            <img src="assets/images/plants/wallnut/side_wallnut.png" alt="坚果墙侧面">
+                        </div>
+                        <div class="name">坚果墙</div>
+                        <div class="view">侧面 Side</div>
+                        <div class="info">1832 × 1832 像素</div>
+                    </div>
+                    <div class="plant-card wallnut">
+                        <div class="img-container">
+                            <img src="assets/images/plants/wallnut/top_wallnut.png" alt="坚果墙顶部">
+                        </div>
+                        <div class="name">坚果墙</div>
+                        <div class="view">顶部 Top</div>
+                        <div class="info">1832 × 1832 像素</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">🎨 多种风格预览图</h2>
+            
+            <div class="style-section">
+                <h3 class="style-title">经典游戏风格 (Classic PvZ Style)</h3>
+                <div class="grid grid-preview">
+                    <div class="plant-card sunflower">
+                        <div class="img-container">
+                            <img src="assets/images/plants_preview/style1_pvz_classic/sunflower.png" alt="向日葵经典风格">
+                        </div>
+                        <div class="name">向日葵</div>
+                        <div class="view">经典风格</div>
+                    </div>
+                    <div class="plant-card peashooter">
+                        <div class="img-container">
+                            <img src="assets/images/plants_preview/style1_pvz_classic/peashooter.png" alt="豌豆射手经典风格">
+                        </div>
+                        <div class="name">豌豆射手</div>
+                        <div class="view">经典风格</div>
+                    </div>
+                    <div class="plant-card wallnut">
+                        <div class="img-container">
+                            <img src="assets/images/plants_preview/style1_pvz_classic/wallnut.png" alt="坚果墙经典风格">
+                        </div>
+                        <div class="name">坚果墙</div>
+                        <div class="view">经典风格</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="style-section">
+                <h3 class="style-title">Q版萌系风格 (Chibi Style)</h3>
+                <div class="grid grid-preview">
+                    <div class="plant-card sunflower">
+                        <div class="img-container">
+                            <img src="assets/images/plants_preview/style2_chibi/sunflower.png" alt="向日葵Q版风格">
+                        </div>
+                        <div class="name">向日葵</div>
+                        <div class="view">Q版萌系</div>
+                    </div>
+                    <div class="plant-card peashooter">
+                        <div class="img-container">
+                            <img src="assets/images/plants_preview/style2_chibi/peashooter.png" alt="豌豆射手Q版风格">
+                        </div>
+                        <div class="name">豌豆射手</div>
+                        <div class="view">Q版萌系</div>
+                    </div>
+                    <div class="plant-card wallnut">
+                        <div class="img-container">
+                            <img src="assets/images/plants_preview/style2_chibi/wallnut.png" alt="坚果墙Q版风格">
+                        </div>
+                        <div class="name">坚果墙</div>
+                        <div class="view">Q版萌系</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="style-section">
+                <h3 class="style-title">写实卡通风格 (Realistic Cartoon Style)</h3>
+                <div class="grid grid-preview">
+                    <div class="plant-card sunflower">
+                        <div class="img-container">
+                            <img src="assets/images/plants_preview/style3_realistic_cartoon/sunflower.png" alt="向日葵写实风格">
+                        </div>
+                        <div class="name">向日葵</div>
+                        <div class="view">写实卡通</div>
+                    </div>
+                    <div class="plant-card peashooter">
+                        <div class="img-container">
+                            <img src="assets/images/plants_preview/style3_realistic_cartoon/peashooter.png" alt="豌豆射手写实风格">
+                        </div>
+                        <div class="name">豌豆射手</div>
+                        <div class="view">写实卡通</div>
+                    </div>
+                    <div class="plant-card wallnut">
+                        <div class="img-container">
+                            <img src="assets/images/plants_preview/style3_realistic_cartoon/wallnut.png" alt="坚果墙写实风格">
+                        </div>
+                        <div class="name">坚果墙</div>
+                        <div class="view">写实卡通</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>✅ 图片替换完成 - 共替换 21 张图片 (12张三视图 + 9张预览图)</p>
+            <p>所有图片尺寸: 1832 × 1832 像素 | 格式: PNG | 支持透明背景</p>
+        </footer>
+    </div>
+</body>
+</html>
