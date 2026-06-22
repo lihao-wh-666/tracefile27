@@ -13,9 +13,7 @@ class Sunflower(PlantBase):
     def __init__(self, row: int, col: int, grid_offset_x: int, grid_offset_y: int,
                  cell_width: int, cell_height: int, resource_loader=None):
         super().__init__(row, col, grid_offset_x, grid_offset_y,
-                         cell_width, cell_height, resource_loader)
-
-        self.name = "sunflower"
+                         cell_width, cell_height, resource_loader, name="sunflower")
         self.hp = 100
         self.max_hp = 100
         self.cost = 50

@@ -11,7 +11,7 @@ class PlantBase(pygame.sprite.Sprite):
     """植物基类，所有植物的父类"""
 
     def __init__(self, row: int, col: int, grid_offset_x: int, grid_offset_y: int,
-                 cell_width: int, cell_height: int, resource_loader=None):
+                 cell_width: int, cell_height: int, resource_loader=None, name: str = "plant"):
         """
         初始化植物
 
@@ -23,6 +23,7 @@ class PlantBase(pygame.sprite.Sprite):
             cell_width: 单元格宽度
             cell_height: 单元格高度
             resource_loader: 资源加载器
+            name: 植物名称
         """
         super().__init__()
 
@@ -34,7 +35,7 @@ class PlantBase(pygame.sprite.Sprite):
         self.cell_height = cell_height
         self.resource_loader = resource_loader
 
-        self.name: str = "plant"
+        self.name: str = name
         self.hp: int = 100
         self.max_hp: int = 100
         self.cost: int = 50
