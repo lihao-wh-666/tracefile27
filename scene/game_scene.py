@@ -32,6 +32,13 @@ class GameScene(BaseScene):
         self.selected_plant = None
         self.grid_plants = {}
 
+        self.dragging = False
+        self.drag_plant_type = None
+        self.drag_mouse_pos = (0, 0)
+        self.drag_ghost_image = None
+        self.hover_grid_pos = None
+        self.hover_grid_valid = False
+
         self.last_zombie_spawn = 0
         self.last_sun_fall = 0
         self.game_start_time = 0
@@ -65,6 +72,11 @@ class GameScene(BaseScene):
         self.suns.empty()
         self.grid_plants.clear()
         self.selected_plant = None
+        self.dragging = False
+        self.drag_plant_type = None
+        self.drag_ghost_image = None
+        self.hover_grid_pos = None
+        self.hover_grid_valid = False
 
     def _start_game(self):
         """开始游戏"""
@@ -78,17 +90,162 @@ class GameScene(BaseScene):
             if event.key == pygame.K_ESCAPE:
                 self.set_next_scene("pause")
             elif event.key == pygame.K_1:
-                self._select_plant("sunflower")
+                self._start_drag("sunflower", pygame.mouse.get_pos())
             elif event.key == pygame.K_2:
-                self._select_plant("peashooter")
+                self._start_drag("peashooter", pygame.mouse.get_pos())
             elif event.key == pygame.K_3:
-                self._select_plant("wallnut")
+                self._start_drag("wallnut", pygame.mouse.get_pos())
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
-                self._handle_click(event.pos)
+                self._handle_mouse_down(event.pos)
             elif event.button == 3:
-                self.selected_plant = None
+                self._cancel_drag()
+
+        elif event.type == pygame.MOUSEMOTION:
+            if self.dragging:
+                self._handle_mouse_motion(event.pos)
+
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1 and self.dragging:
+                self._handle_mouse_up(event.pos)
+
+    def _start_drag(self, plant_type: str, mouse_pos=None):
+        """开始拖拽植物"""
+        if not self.game_controller:
+            return
+        cost = self.game_controller.config.PLANT_COSTS.get(plant_type, 0)
+        if not self.game_controller.economy.can_afford(cost):
+            return
+
+        self.dragging = True
+        self.drag_plant_type = plant_type
+        self.selected_plant = plant_type
+        self.drag_ghost_image = self._create_ghost_image(plant_type)
+        if mouse_pos:
+            self.drag_mouse_pos = mouse_pos
+
+    def _cancel_drag(self):
+        """取消拖拽"""
+        self.dragging = False
+        self.drag_plant_type = None
+        self.selected_plant = None
+        self.drag_ghost_image = None
+        self.hover_grid_pos = None
+        self.hover_grid_valid = False
+
+    def _create_ghost_image(self, plant_type: str):
+        """创建拖拽时的半透明预览图像"""
+        if not self.game_controller:
+            return None
+
+        config = self.game_controller.config
+        args = (0, 0, config.GRID_OFFSET_X, config.GRID_OFFSET_Y,
+                config.CELL_WIDTH, config.CELL_HEIGHT,
+                self.game_controller.resource_loader)
+
+        if plant_type == "sunflower":
+            from sprites.plants.sunflower import Sunflower
+            plant = Sunflower(*args)
+        elif plant_type == "peashooter":
+            from sprites.plants.peashooter import Peashooter
+            plant = Peashooter(*args)
+        elif plant_type == "wallnut":
+            from sprites.plants.wallnut import WallNut
+            plant = WallNut(*args)
+        else:
+            return None
+
+        ghost_image = plant.image.copy()
+        ghost_image.set_alpha(150)
+        return ghost_image
+
+    def _handle_mouse_down(self, pos):
+        """处理鼠标按下"""
+        if self.game_controller:
+            clicked_suns = self.game_controller.collision_manager.check_sun_click_collision(
+                self.suns, pos
+            )
+            for sun in clicked_suns:
+                sun.collect()
+                return
+
+        plant_type = self._get_plant_card_at_pos(pos)
+        if plant_type:
+            self._start_drag(plant_type, pos)
+            return
+
+        if self.selected_plant and not self.dragging:
+            grid_pos = self._pixel_to_grid(pos)
+            if grid_pos:
+                self._try_plant(grid_pos[0], grid_pos[1])
+
+    def _handle_mouse_motion(self, pos):
+        """处理鼠标移动（拖拽中）"""
+        self.drag_mouse_pos = pos
+        grid_pos = self._pixel_to_grid(pos)
+        if grid_pos:
+            self.hover_grid_pos = grid_pos
+            self.hover_grid_valid = self._is_grid_valid(grid_pos[0], grid_pos[1])
+        else:
+            self.hover_grid_pos = None
+            self.hover_grid_valid = False
+
+    def _handle_mouse_up(self, pos):
+        """处理鼠标释放"""
+        if not self.dragging or not self.drag_plant_type:
+            return
+
+        grid_pos = self._pixel_to_grid(pos)
+        if grid_pos and self._is_grid_valid(grid_pos[0], grid_pos[1]):
+            self._try_plant(grid_pos[0], grid_pos[1])
+
+        self._cancel_drag()
+
+    def _get_plant_card_at_pos(self, pos):
+        """获取点击位置的植物卡片类型"""
+        if not self.game_controller:
+            return None
+
+        x, y = pos
+        if y > 70:
+            return None
+
+        plant_types = [
+            ("sunflower", 50),
+            ("peashooter", 100),
+            ("wallnut", 50),
+        ]
+
+        x_start = 150
+        card_width = 100
+        card_height = 50
+        card_y = 10
+
+        for i, (name, cost) in enumerate(plant_types):
+            card_x = x_start + i * 120
+            if (card_x <= x <= card_x + card_width and
+                card_y <= y <= card_y + card_height):
+                if self.game_controller.economy.can_afford(cost):
+                    return name
+        return None
+
+    def _is_grid_valid(self, row: int, col: int) -> bool:
+        """检查网格位置是否有效（可种植）"""
+        if not self.game_controller:
+            return False
+
+        config = self.game_controller.config
+        if row < 0 or row >= config.GRID_ROWS:
+            return False
+        if col < 0 or col >= config.GRID_COLS:
+            return False
+
+        grid_key = (row, col)
+        if grid_key in self.grid_plants:
+            return False
+
+        return True
 
     def _select_plant(self, plant_type: str):
         """选择植物"""
@@ -99,21 +256,6 @@ class GameScene(BaseScene):
             self.selected_plant = plant_type
         else:
             self.selected_plant = None
-
-    def _handle_click(self, pos):
-        """处理点击"""
-        if self.game_controller:
-            clicked_suns = self.game_controller.collision_manager.check_sun_click_collision(
-                self.suns, pos
-            )
-            for sun in clicked_suns:
-                sun.collect()
-                return
-
-        if self.selected_plant:
-            grid_pos = self._pixel_to_grid(pos)
-            if grid_pos:
-                self._try_plant(grid_pos[0], grid_pos[1])
 
     def _pixel_to_grid(self, pos):
         """像素转网格坐标"""
@@ -336,12 +478,14 @@ class GameScene(BaseScene):
 
         self._render_background(surface, config)
         self._render_grid(surface, config)
+        self._render_grid_highlight(surface, config)
         self.plants.draw(surface)
         self.zombies.draw(surface)
         self.bullets.draw(surface)
         self.suns.draw(surface)
         self._draw_hp_bars(surface)
         self._render_ui(surface, config)
+        self._render_drag_ghost(surface)
 
     def _render_background(self, surface: pygame.Surface, config):
         """渲染背景"""
@@ -370,6 +514,35 @@ class GameScene(BaseScene):
             start_y = config.GRID_OFFSET_Y
             end_y = config.GRID_OFFSET_Y + config.GRID_ROWS * config.CELL_HEIGHT
             pygame.draw.line(surface, grid_color, (x, start_y), (x, end_y), 2)
+
+    def _render_grid_highlight(self, surface: pygame.Surface, config):
+        """渲染网格高亮"""
+        if not self.hover_grid_pos or not self.dragging:
+            return
+
+        row, col = self.hover_grid_pos
+        cell_x = config.GRID_OFFSET_X + col * config.CELL_WIDTH
+        cell_y = config.GRID_OFFSET_Y + row * config.CELL_HEIGHT
+
+        if self.hover_grid_valid:
+            highlight_color = (0, 255, 0, 80)
+        else:
+            highlight_color = (255, 0, 0, 80)
+
+        highlight_surface = pygame.Surface(
+            (config.CELL_WIDTH, config.CELL_HEIGHT), pygame.SRCALPHA
+        )
+        highlight_surface.fill(highlight_color)
+        surface.blit(highlight_surface, (cell_x, cell_y))
+
+    def _render_drag_ghost(self, surface: pygame.Surface):
+        """渲染拖拽时的幽灵植物"""
+        if not self.dragging or not self.drag_ghost_image:
+            return
+
+        ghost_rect = self.drag_ghost_image.get_rect()
+        ghost_rect.center = self.drag_mouse_pos
+        surface.blit(self.drag_ghost_image, ghost_rect)
 
     def _draw_hp_bars(self, surface: pygame.Surface):
         """绘制血条"""

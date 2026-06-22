@@ -103,7 +103,8 @@ class PlantSelector:
     """植物选择栏"""
 
     def __init__(self, x: int, y: int, plants_config: List[Dict],
-                 on_select: Optional[Callable[[str], None]] = None):
+                 on_select: Optional[Callable[[str], None]] = None,
+                 on_drag_start: Optional[Callable[[str], None]] = None):
         """
         初始化植物选择栏
 
@@ -112,10 +113,12 @@ class PlantSelector:
             y: Y坐标
             plants_config: 植物配置列表
             on_select: 选中回调
+            on_drag_start: 拖拽开始回调
         """
         self.x = x
         self.y = y
         self.on_select = on_select
+        self.on_drag_start = on_drag_start
         self.selected_plant: Optional[str] = None
         self.cards: List[PlantCard] = []
 
@@ -154,6 +157,8 @@ class PlantSelector:
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             for card in self.cards:
                 if card.is_clicked(event.pos):
+                    if self.on_drag_start:
+                        self.on_drag_start(card.plant_type)
                     self._select_plant(card.plant_type)
                     return True
         return False
